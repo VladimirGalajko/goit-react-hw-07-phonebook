@@ -1,37 +1,38 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSlice} from '@reduxjs/toolkit';
+import {
+  addContact,
+  fetchContacts,
+  deleteContact,
+} from './../../store/contactListSlise/contactsAsyncThunk';
+import {
+  getItems,
+  setItems,
+  setFulStatus,
+  setPendStatus,
+  setRejStatus,
+  delOneItem,
+} from './stateFunction';
+
+
+const initialState = {
+  items: [],
+  isLoading: false,
+  error: null,
+};
 
 const contactListSlise = createSlice({
-  name: 'contactList',
-  initialState: {
-    contacts: [],
-    filter: '',
-  },
-  reducers: {
-    addContactAction: {
-      prepare: contacts => {
-        return { payload: { ...contacts, id: nanoid() } };
-      },
+  name: 'contacts',
+  initialState: initialState,
+  extraReducers: builder => {
+    builder
+      .addCase(fetchContacts.fulfilled, getItems)
+      .addCase(addContact.fulfilled, setItems)
+      .addCase(deleteContact.fulfilled, delOneItem)
+      .addMatcher((action) => action.type.endsWith('pending'), setPendStatus)
+      .addMatcher((action) => action.type.endsWith('rejected'), setRejStatus)
+			.addMatcher((action) => action.type.endsWith('fulfilled'), setFulStatus)
 
-      reducer: (state, action) => {
-        return { ...state, contacts: [...state.contacts, action.payload] };
-        // state.contacts.push(action.payload)
-      },
-    },
-    delContactAction: (state, action) => {
-      return {
-        ...state,
-        contacts: state.contacts.filter(el => el.id !== action.payload),
-      };
-      //state.contacts = state.contacts.filter((el) => el.id !== action.payload)
-    },
-
-    setFilterAction: (state, action) => {
-      state.filter = action.payload;
-    },
   },
 });
 
-export const { addContactAction, delContactAction, setFilterAction } =
-  contactListSlise.actions;
-
-export const contactReducer = contactListSlise.reducer;
+export default contactListSlise.reducer;

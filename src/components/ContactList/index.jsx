@@ -1,40 +1,49 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Li } from './ContactsList.styled';
-import { delContactAction } from 'store/contactListSlise/contactListSlise';
+import {
+  deleteContact,
+  fetchContacts,
+} from 'store/contactListSlise/contactsAsyncThunk';
+import { useEffect } from 'react';
+import { selectVisibleContacts } from 'store/selectors';
 
 const ContactList = () => {
-  const { contacts } = useSelector(state => state.contacts);
+  const showContacts = useSelector(selectVisibleContacts);
+  const { isLoading, error } = useSelector(state => state.contacts);
+
   const dispatch = useDispatch();
 
-  const value = useSelector(state => state.contacts.filter);
-  let showContacts = contacts;
-  if (value !== '') {
-    showContacts = contacts.filter(el => el.name.toLowerCase().includes(value));
-  }
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const delContacts = id => {
-    dispatch(delContactAction(id));
+    dispatch(deleteContact(id));
   };
 
   return (
-    <ul>
-      {showContacts.map(({ name, number, id }) => {
-        return (
-          <Li key={id}>
-            <span>{name}: </span>
-            <span>{number} </span>
-            <button
-              type="button"
-              onClick={() => {
-                delContacts(id);
-              }}
-            >
-              ❌
-            </button>
-          </Li>
-        );
-      })}
-    </ul>
+    <>
+      {isLoading && <h4>Loading...</h4>}
+      {error && <h4>{error}</h4>}
+      <ul>
+        {showContacts.map(({ name, phone, id }) => {
+          return (
+            <Li key={id}>
+              <span>{name}: </span>
+              <span>{phone} </span>
+              <button
+                type="button"
+                onClick={() => {
+                  delContacts(id);
+                }}
+              >
+                ❌
+              </button>
+            </Li>
+          );
+        })}
+      </ul>
+    </>
   );
 };
 

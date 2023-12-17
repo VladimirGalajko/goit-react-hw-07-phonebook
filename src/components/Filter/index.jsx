@@ -1,6 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { Input } from './Filter.styled';
-import { setFilterAction } from 'store/contactListSlise/contactListSlise';
+import { setFilterAction } from 'store/filterSlise/filterSlise';
+
 
 export const Filter = () => {
   const value = useSelector(state => state.contacts.filter);

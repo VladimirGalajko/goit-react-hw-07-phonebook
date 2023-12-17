@@ -1,10 +1,10 @@
+import { addContact } from 'store/contactListSlise/contactsAsyncThunk';
 import { Button, Form, Input } from './FormAddContact.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContactAction } from 'store/contactListSlise/contactListSlise';
 
 export const FormAddContact = () => {
-  const { contacts } = useSelector(state => state.contacts);
-  console.log('contacts', contacts);
+  const contacts = useSelector(state => state.contacts.items);
+
   const dispatch = useDispatch();
 
   const handleSubmit = e => {
@@ -12,13 +12,13 @@ export const FormAddContact = () => {
 
     const form = e.target;
     const name = e.target.elements.name.value;
-    const number = e.target.elements.number.value;
+    const phone = e.target.elements.number.value;
 
     if (contacts.some(({ name }) => name === e.target.elements.name.value)) {
       return alert(`${e.target.elements.name.value} is already in contacts`);
     }
 
-    dispatch(addContactAction({ name, number }));
+    dispatch(addContact({ name: name, phone: phone }));
     form.reset();
   };
 
@@ -44,7 +44,7 @@ export const FormAddContact = () => {
         id="inputNumber"
         name="number"
         placeholder="number"
-        value={contacts.number}
+        value={contacts.phone}
         pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
         title="Numbers"
         required
